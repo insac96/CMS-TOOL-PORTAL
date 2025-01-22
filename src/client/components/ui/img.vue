@@ -3,7 +3,7 @@
     class="relative select-none UiImg"
     :style="`aspect-ratio: ${w} / ${h}`"
   >
-    <NuxtImg 
+    <!-- <NuxtImg 
       :src="img(src)" 
       class="object-cover w-full h-full select-none"
       :sizes="props.imgSize"
@@ -17,6 +17,14 @@
       placeholder="/images/placeholder.png"
       :alt="props.alt" 
       @load="onLoad"
+    /> -->
+
+    <img
+      v-if="!loading"
+      :src="img(imgSrc)"
+      class="object-cover w-full h-full select-none"
+      placeholder="/images/placeholder.png"
+      :alt="props.alt" 
     />
 
     <USkeleton 
@@ -43,10 +51,21 @@ const props = defineProps({
   preload: { type: Boolean, default: false },
 })
 
+const imgSrc = ref(undefined)
 const loading = ref(true)
-const onLoad = (event) => {
-  if(event) loading.value = false
-}
+
+onMounted(() => {
+  if(!props.src){
+    imgSrc.value = null
+  }
+  else {
+    const ctx = new Image
+    ctx.onload = () => imgSrc.value = props.src
+    ctx.onerror = () => imgSrc.value = null
+    ctx.src = props.src
+  }
+  loading.value = false
+})
 </script>
 
 <style lang="sass">
