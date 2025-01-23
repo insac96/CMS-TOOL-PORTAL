@@ -62,7 +62,10 @@ const list = ref([])
 const columns = [
   {
     key: 'user',
-    label: 'Tài khoản',
+    label: 'Tài khoản Web',
+  },{
+    key: 'account',
+    label: 'Tài khoản Game',
   },{
     key: 'recharge',
     label: 'Tool nạp',

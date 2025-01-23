@@ -57,10 +57,6 @@
               <UiText weight="semibold" color="gray" size="sm">Doanh thu</UiText>
               <UiText weight="semibold" size="sm">{{ toMoney(game.statistic.revenue) }}</UiText>
             </UiFlex>
-            <UiFlex justify="between" class="mb-3" v-if="!!authStore.isAdmin">
-              <UiText weight="semibold" color="gray" size="sm">IP Game</UiText>
-              <UiText weight="semibold" size="sm">{{ game.ip || '...' }}</UiText>
-            </UiFlex>
             <UiFlex justify="between" class="mb-3">
               <UiText weight="semibold" color="gray" size="sm">Tool nạp</UiText>
               <UiText weight="semibold" size="sm">{{ toMoney(game.price.recharge) }}</UiText>
@@ -109,11 +105,6 @@ const menus = (row) => [
       label: 'Người chơi',
       icon: 'i-bx-group',
       click: () => navigateTo(`/manage/@gm/tool/${row._id}`)
-    },
-    {
-      label: 'Nhân vật',
-      icon: 'i-bxs-user-account',
-      click: () => navigateTo(`/manage/@gm/tool/${row._id}/game/roles`)
     }
   ],[{
       label: 'Gói nạp',

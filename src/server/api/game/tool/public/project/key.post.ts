@@ -1,5 +1,3 @@
-import type { IAuth, IDBGameToolUser } from "~~/types"
-
 export default defineEventHandler(async (event) => {
   try {
     const { key } = await readBody(event)
@@ -13,7 +11,7 @@ export default defineEventHandler(async (event) => {
     )
     .populate({ path: 'platform', select: 'name key' })
     .populate({ path: 'category', select: 'name key' })
-    .select('-ip -port -secret -api')
+    .select('-api')
     if(!game) throw 'Trò chơi không tồn tại'
 
     const newserver = await DB.GameToolServerOpen
@@ -21,18 +19,7 @@ export default defineEventHandler(async (event) => {
     .sort({ opentime: -1 })
 
     const result = JSON.parse(JSON.stringify(game))
-    result.tool = { recharge: false, mail: false }
     result.newserver = newserver
-
-    const auth = await getAuth(event, false)
-    if(!!auth) {
-      const userGame = await DB.GameToolUser.findOne({ game: game._id, user: (auth as IAuth)._id }) as IDBGameToolUser
-
-      if(!!userGame) {
-        result.tool.recharge = userGame.recharge
-        result.tool.mail = userGame.mail
-      }
-    }
 
     return resp(event, { result: result })
   } 

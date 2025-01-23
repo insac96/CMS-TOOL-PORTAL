@@ -8,7 +8,7 @@
     debounce
   >
     <template #label>
-      {{ !!select ? select.name : 'Tìm kiếm vật phẩm' }}
+      {{ !!select ? select.name : 'Tìm kiếm gói nạp' }}
     </template>
 
     <template #option="{ option: item }">
@@ -37,11 +37,11 @@ watch(itemSelect, val => {
 })
 
 const searchItem = async (key) => {
-  const items = await useAPI('game/tool/public/select/items', { key: key, game: props.game })
+  const items = await useAPI('game/tool/public/select/recharge', { key: key, game: props.game })
 
   return items.map(i => ({
-    id: i.item_id,
-    name: i.item_name
+    id: i.recharge_id,
+    name: i.recharge_name
   })).filter(Boolean)
 }
 </script>

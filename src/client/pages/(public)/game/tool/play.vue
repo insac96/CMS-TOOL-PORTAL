@@ -77,9 +77,8 @@ onBeforeRouteLeave(() => {
   window.removeEventListener('message', onMessage, false)
 })
 
-const doneBuyTool = (state) => {
-  game.value.tool.recharge = state.recharge
-  game.value.tool.mail = state.mail
+const doneBuyTool = () => {
+  
 }
 
 const getGame = async () => {

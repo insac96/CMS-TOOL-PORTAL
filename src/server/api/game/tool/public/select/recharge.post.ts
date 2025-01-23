@@ -14,17 +14,17 @@ export default defineEventHandler(async (event) => {
     const match : any = { game: game._id }
     if(!!key){
       match['$or'] = [
-        { item_name: { $regex : key, $options : 'i' }},
-        { item_id: { $regex : key, $options : 'i' }},
+        { recharge_id: { $regex : key, $options : 'i' }},
+        { recharge_name: { $regex : key, $options : 'i' }},
       ]
     }
 
-    const items = await DB.GameToolItem
+    const list = await DB.GameToolRecharge
     .find(match)
-    .select('item_id item_name')
+    .select('recharge_id recharge_name')
     .limit(20)
 
-    return resp(event, { result: items })
+    return resp(event, { result: list })
   } 
   catch (e:any) {
     return resp(event, { code: 400, message: e.toString() })

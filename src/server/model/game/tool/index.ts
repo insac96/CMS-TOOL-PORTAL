@@ -1,5 +1,5 @@
 import type { Mongoose } from 'mongoose'
-import type { IDBGameTool, IDBGameToolServerOpen, IDBGameToolUser, IDBGameToolPayment, IDBGameToolRecharge, IDBGameToolItem, IDBGameToolComment, IDBGameToolLogAdmin } from '~~/types'
+import type { IDBGameTool, IDBGameToolServerOpen, IDBGameToolUser, IDBGameToolRecharge, IDBGameToolItem, IDBGameToolComment, IDBGameToolLogAdmin } from '~~/types'
 
 export const DBGameTool = (mongoose : Mongoose) => {
   const schema = new mongoose.Schema<IDBGameTool>({ 
@@ -19,19 +19,12 @@ export const DBGameTool = (mongoose : Mongoose) => {
     
     content: { type: String },
 
-    ip: { type: String, default: '' },
-    port: { type: Number, default: 80 },
     mobile: { type: Boolean, default: false },
-    paygame: { type: Boolean, default: true },
-    secret: { type: String, default: '@Secret' },
+    
     api: {
-      start: { type: String, default: '' },
-      server: { type: String, default: '' },
-      role: { type: String, default: '' },
-      roles: { type: String, default: ''},
       mail: { type: String, default: '' },
       recharge: { type: String, default: '' },
-      os: { type: String, default: '' }
+      secret: { type: String, default: '' },
     },
 
     play: {
@@ -55,7 +48,7 @@ export const DBGameTool = (mongoose : Mongoose) => {
 
     manager: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 
-    open: { type: Boolean, default: false },
+    open: { type: Boolean, default: true },
     pin: { type: Boolean, default: false },
     display: { type: Boolean, default: true }
   }, {
@@ -71,6 +64,7 @@ export const DBGameTool = (mongoose : Mongoose) => {
 export const DBGameToolServerOpen = (mongoose : Mongoose) => {
   const schema = new mongoose.Schema<IDBGameToolServerOpen>({ 
     game: { type: mongoose.Schema.Types.ObjectId, ref: 'GameTool' },
+    server_id: { type: String },
     server_name: { type: String },
     opentime: { type: Date },
   }, {
@@ -85,6 +79,7 @@ export const DBGameToolUser = (mongoose : Mongoose) => {
   const schema = new mongoose.Schema<IDBGameToolUser>({ 
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     game: { type: mongoose.Schema.Types.ObjectId, ref: 'GameTool' },
+    account: { type: String },
     recharge: { type: Boolean, index: true, default: false },
     mail: { type: Boolean, index: true, default: false },
     coin: { type: Number, index: true, default: 0 },
@@ -93,19 +88,6 @@ export const DBGameToolUser = (mongoose : Mongoose) => {
   })
 
   const model = mongoose.model('GameToolUser', schema, 'GameToolUser')
-  return model 
-}
-
-export const DBGameToolPayment = (mongoose : Mongoose) => {
-  const schema = new mongoose.Schema<IDBGameToolPayment>({ 
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'GameToolUser' },
-    game: { type: mongoose.Schema.Types.ObjectId, ref: 'GameTool' },
-    coin: { type: Number, index: true, default: 0 },
-  }, {
-    timestamps: true
-  })
-
-  const model = mongoose.model('GameToolPayment', schema, 'GameToolPayment')
   return model 
 }
 

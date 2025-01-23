@@ -39,6 +39,10 @@
     <!-- Modal Add -->
     <UModal v-model="modal.add" preventClose>
       <UForm :state="stateAdd" @submit="addAction" class="p-4">
+        <UFormGroup label="ID máy chủ">
+          <UInput v-model="stateAdd.server_id" />
+        </UFormGroup>
+
         <UFormGroup label="Tên máy chủ">
           <UInput v-model="stateAdd.server_name" />
         </UFormGroup>
@@ -57,6 +61,10 @@
     <!-- Modal Edit -->
     <UModal v-model="modal.edit" preventClose>
       <UForm :state="stateEdit" @submit="editAction" class="p-4">
+        <UFormGroup label="ID máy chủ">
+          <UInput v-model="stateEdit.server_id" />
+        </UFormGroup>
+
         <UFormGroup label="Tên máy chủ">
           <UInput v-model="stateEdit.server_name" />
         </UFormGroup>
@@ -83,6 +91,9 @@ const list = ref([])
 // Columns
 const columns = [
   {
+    key: 'server_id',
+    label: 'ID máy chủ',
+  },{
     key: 'server_name',
     label: 'Tên máy chủ',
   },{
@@ -115,12 +126,14 @@ watch(() => page.value.sort.direction, () => getList())
 // State
 const stateAdd = ref({
   game: props.game,
+  server_id: null,
   server_name: null,
   opentime: null
 })
 const stateEdit = ref({
   _id: null,
   game: props.game,
+  server_id: null,
   server_name: null,
   opentime: null
 })
@@ -133,6 +146,7 @@ const modal = ref({
 
 watch(() => modal.value.add, (val) => !val && (stateAdd.value = {
   game: props.game,
+  server_id: null,
   server_name: null,
   opentime: null
 }))

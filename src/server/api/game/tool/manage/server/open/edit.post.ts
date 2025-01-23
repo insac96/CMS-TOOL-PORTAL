@@ -6,9 +6,9 @@ export default defineEventHandler(async (event) => {
     if(auth.type != 100) throw 'Bạn không phải quản trị viên cấp cao'
 
     const body = await readBody(event)
-    const { _id, game : gameID, server_name, opentime } = body
+    const { _id, game : gameID, server_id, server_name, opentime } = body
     if(!gameID) throw 'Không tìm thấy ID trò chơi'
-    if(!_id || !server_name || !opentime) throw 'Dữ liệu đầu vào không hợp lệ'
+    if(!_id || !server_id || !server_name || !opentime) throw 'Dữ liệu đầu vào không hợp lệ'
 
     const game = await DB.GameTool.findOne({ _id: gameID }).select('_id') as IDBGameTool
     if(!game) throw 'Trò chơi không tồn tại'

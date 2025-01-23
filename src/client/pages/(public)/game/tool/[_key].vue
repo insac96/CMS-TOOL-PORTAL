@@ -62,32 +62,24 @@
         <div class="my-4">
           <UiFlex justify="between" class="mb-3">
             <UiText weight="semibold" color="gray" size="sm">Ra mắt</UiText>
-            <UiText weight="semibold" size="sm">{{ useDayJs().fromTime(game.createdAt) }}</UiText>
+            <UiText weight="bold" size="sm">{{ useDayJs().fromTime(game.createdAt) }}</UiText>
           </UiFlex>
 
           <UiFlex justify="between" class="mb-3">
             <UiText weight="semibold" color="gray" size="sm">Tool nạp</UiText>
-            <UiText weight="semibold" size="sm" v-if="!game.tool.recharge" color="primary">{{ toMoney(game.price.recharge)+' Xu' }}</UiText>
-            <UiFlex class="gap-1" v-else>
-              <UiIcon name="i-bxs-check-circle" size="4" color="green" />
-              <UiText weight="semibold" size="sm" color="green">Đã mua</UiText>
-            </UiFlex>
+            <UiText weight="bold" size="sm" color="primary">{{ toMoney(game.price.recharge)+' Xu' }}</UiText>
           </UiFlex>
 
           <UiFlex justify="between" class="mb-3">
             <UiText weight="semibold" color="gray" size="sm">Tool thư</UiText>
-            <UiText weight="semibold" size="sm" v-if="!game.tool.mail" color="primary">{{ toMoney(game.price.mail)+' Xu' }}</UiText>
-            <UiFlex class="gap-1" v-else>
-              <UiIcon name="i-bxs-check-circle" size="4" color="green" />
-              <UiText weight="semibold" size="sm" color="green">Đã mua</UiText>
-            </UiFlex>
+            <UiText weight="bold" size="sm" color="primary">{{ toMoney(game.price.mail)+' Xu' }}</UiText>
           </UiFlex>
         </div>
 
         <!-- Button -->
         <UiFlex class="gap-1">
           <UButton icon="i-bx-play" class="grow justify-center" size="lg" @click="action('play')">Chơi Ngay</UButton>
-          <UButton icon="i-bx-cart" class="grow justify-center" size="lg" @click="action('buy')" color="gray" :disabled="!!game.tool.recharge && !!game.tool.mail">Mua Tool</UButton>
+          <UButton icon="i-bx-cart" class="grow justify-center" size="lg" @click="action('buy')" color="gray">Mua Tool</UButton>
         </UiFlex>
       </UiContent>
     </div>
@@ -218,9 +210,7 @@ const action = (key) => {
   modal.value[key] = true
 }
 
-const doneBuyTool = (state) => {
-  game.value.tool.recharge = state.recharge
-  game.value.tool.mail = state.mail
+const doneBuyTool = () => {
   modal.value.buy = false
 }
  

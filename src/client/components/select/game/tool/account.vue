@@ -3,16 +3,11 @@
     v-model="itemSelect"
     :searchable="searchItem"
     size="lg"
-    by="id"
     class="grow"
     debounce
   >
     <template #label>
-      {{ !!select ? select.name : 'Tìm kiếm vật phẩm' }}
-    </template>
-
-    <template #option="{ option: item }">
-      {{ item.name }}
+      {{ !!select ? select : 'Tìm kiếm tài khoản' }}
     </template>
   </USelectMenu>
 </template>
@@ -37,11 +32,8 @@ watch(itemSelect, val => {
 })
 
 const searchItem = async (key) => {
-  const items = await useAPI('game/tool/public/select/items', { key: key, game: props.game })
+  const list = await useAPI('game/tool/public/select/account', { key: key, game: props.game })
 
-  return items.map(i => ({
-    id: i.item_id,
-    name: i.item_name
-  })).filter(Boolean)
+  return list.map(i => i.account).filter(Boolean)
 }
 </script>

@@ -52,6 +52,9 @@ const columns = [
     key: 'game',
     label: 'Trò chơi',
   },{
+    key: 'account',
+    label: 'Tài khoản Game',
+  },{
     key: 'recharge',
     label: 'Tool nạp',
   },{

@@ -106,25 +106,20 @@
     <!-- Modal Edit API -->
     <UModal v-model="modal.editAPI" preventClose>
       <UForm :state="stateEditAPI" @submit="editAPIAction" class="p-4">
-        <UFormGroup label="Địa chỉ IP">
-          <UInput v-model="stateEditAPI.ip" :disabled="!authStore.isAdmin" />
+        <UFormGroup label="API Thư">
+          <UInput v-model="stateEditAPI.mail" :disabled="!authStore.isAdmin" />
         </UFormGroup>
 
-        <UFormGroup label="Port API">
-          <UInput v-model="stateEditAPI.port" type="number" :disabled="!authStore.isAdmin" />
+        <UFormGroup label="API Nạp">
+          <UInput v-model="stateEditAPI.recharge" type="number" :disabled="!authStore.isAdmin" />
         </UFormGroup>
 
-        <UFormGroup label="Mã ủy quyền">
+        <UFormGroup label="GM Key">
           <UInput v-model="stateEditAPI.secret" :disabled="!authStore.isAdmin"/>
         </UFormGroup>
 
         <UiFlex justify="end" class="mt-4">
           <UiFlex class="mr-auto gap-1" type="col" items="start">
-            <UiFlex>
-              <UToggle v-model="stateEditAPI.paygame" :disabled="!authStore.isAdmin" />
-              <UiText size="sm" weight="semibold" color="gray" text="Nạp trong game" class="ml-2" />
-            </UiFlex>
-
             <UiFlex>
               <UToggle v-model="stateEditAPI.open" :disabled="!authStore.isAdmin" />
               <UiText size="sm" weight="semibold" color="gray" text="Khai mở" class="ml-2" />
@@ -252,10 +247,8 @@ const stateEditImage = ref({
 })
 const stateEditAPI = ref({
   _id: null,
-  ip: null,
-  port: null,
-  mobile: null,
-  paygame: null,
+  mail: null,
+  recharge: null,
   secret: null,
   open: null
 })
@@ -371,7 +364,11 @@ const actions = (row) => [
     label: 'Sửa API Game',
     icon: 'i-bx-planet',
     click: () => {
-      Object.keys(stateEditAPI.value).forEach(key => stateEditAPI.value[key] = row[key])
+      stateEditAPI.value._id = row._id
+      stateEditAPI.value.open = row.open
+      stateEditAPI.value.mail = row.api ? row.api.mail || '' : ''
+      stateEditAPI.value.recharge = row.api ? row.api.recharge || '' : ''
+      stateEditAPI.value.secret = row.api ? row.api.secret || '' : ''
       modal.value.editAPI = true
     }
   },{

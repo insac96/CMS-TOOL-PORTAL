@@ -5,30 +5,26 @@ export default defineEventHandler(async (event) => {
     const auth = await getAuth(event) as IAuth
     const body = await readBody(event)
 
-    const { size, current, sort, search, game : code } = body
+    const { key, game : code } = body
     if(!code) throw 'Không tìm thấy mã trò chơi'
-    if(!size || !current) throw 'Dữ liệu phân trang sai'
-    if(!sort.column || !sort.direction) throw 'Dữ liệu sắp xếp sai'
-
-    const sorting : any = { }
-    sorting[sort.column] = sort.direction == 'desc' ? -1 : 1
 
     const game = await DB.GameTool.findOne({ code: code, display: true }).select('_id') as IDBGameTool
     if(!game) throw 'Trò chơi không tồn tại'
 
     const match : any = { game: game._id }
-    if(search){
-      match['$text'] = { '$search': search }
+    if(!!key){
+      match['$or'] = [
+        { item_name: { $regex : key, $options : 'i' }},
+        { item_id: { $regex : key, $options : 'i' }},
+      ]
     }
 
-    const list = await DB.GameToolRecharge
+    const list = await DB.GameToolItem
     .find(match)
-    .sort(sorting)
-    .limit(size)
-    .skip((current - 1) * size)
+    .select('item_id item_name')
+    .limit(20)
 
-    const total = await DB.GameToolRecharge.count()
-    return resp(event, { result: { list, total } })
+    return resp(event, { result: list })
   } 
   catch (e:any) {
     return resp(event, { code: 400, message: e.toString() })

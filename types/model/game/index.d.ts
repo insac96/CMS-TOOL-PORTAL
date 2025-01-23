@@ -2,8 +2,7 @@ import type { Types } from 'mongoose'
 export { 
   IDBGameTool, 
   IDBGameToolServerOpen,
-  IDBGameToolUser, 
-  IDBGameToolPayment, 
+  IDBGameToolUser,
   IDBGameToolRecharge, 
   IDBGameToolItem ,
   IDBGameToolComment,

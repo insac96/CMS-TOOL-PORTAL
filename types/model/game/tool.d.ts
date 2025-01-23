@@ -23,20 +23,12 @@ export interface IDBGameTool {
 
   content: string
 
-  ip: string
-  port: number
   mobile: boolean
-  paygame: boolean
-  secret: string
-
+  
   api: {
-    start: string
-    server: string
-    role: string
-    roles: string
     mail: string
     recharge: string
-    os: string
+    secret: string
   }
 
   play: {
@@ -71,6 +63,7 @@ export interface IDBGameToolServerOpen {
   updatedAt: Date
 
   game: Types.ObjectId | IDBGameTool
+  server_id: string
   server_name: string
   opentime: date
 }
@@ -82,20 +75,11 @@ export interface IDBGameToolUser {
 
   user: Types.ObjectId | IDBUser
   game: Types.ObjectId | IDBGameTool
+  account: string
 
   recharge: boolean
   mail: boolean
 
-  coin: number
-}
-
-export interface IDBGameToolPayment {
-  _id: Types.ObjectId
-  createdAt: Date
-  updatedAt: Date
-
-  user: Types.ObjectId | IDBGameToolUser
-  game: Types.ObjectId | IDBGameTool
   coin: number
 }
 

@@ -1,34 +1,50 @@
-import type { IAuth, IDBGameTool, IDBGameToolUser } from "~~/types"
+import type { IAuth, IDBGameTool, IDBGameToolItem, IDBGameToolServerOpen, IDBGameToolUser } from "~~/types"
+import axios from 'axios'
 
 export default defineEventHandler(async (event) => {
   try {
     const auth = await getAuth(event) as IAuth
     const body = await readBody(event)
 
-    const { game : code, items, server_id, role_id } = body
+    const { game : code, account, server_id, item, amount } = body
     
     if(!code) throw 'Không tìm thấy mã trò chơi'
-    if(!items) throw 'Không tìm thấy vật phẩm để gửi'
-    if(!Array.isArray(items)) throw 'Định dạng vật phẩm không đúng'
+    if(!account) throw 'Vui lòng chọn tài khoản game'
+    if(!server_id) throw 'Vui lòng chọn máy chủ'
+    if(!item) throw 'Vui lòng chọn vật phẩm để gửi'
+    if(!item.id) throw 'Vật phẩm gửi không hợp lệ'
     
-    const game = await DB.GameTool.findOne({ code: code, display: true }).select('_id ip api secret') as IDBGameTool
+    // Check Game
+    const game = await DB.GameTool.findOne({ code: code, display: true }).select('api') as IDBGameTool
     if(!game) throw 'Trò chơi không tồn tại'
-    if(!game.ip) throw 'Trò chơi đang bảo trì'
+    if(!game.api.mail || !game.api.secret) throw 'Tính năng gửi thư đang bảo trì'
 
-    const userGameTool = await DB.GameToolUser.findOne({ game: game._id, user: auth._id }) as IDBGameToolUser
-    if(!userGameTool) throw 'Bạn chưa mua bất cứ tool nào'
-    if(!userGameTool.mail) throw 'Vui lòng mua tool gửi thư trước'
+    // Check User Game
+    const userGameTool = await DB.GameToolUser.findOne({ game: game._id, user: auth._id, account: account }) as IDBGameToolUser
+    if(!userGameTool) throw 'Bạn chưa mua bất cứ tool nào cho tài khoản game này'
+    if(!userGameTool.mail) throw 'Vui lòng mua tool gửi thư cho tài khoản game này trước'
 
-    await gameSendMail(event, {
-      url: game.api.mail,
-      secret: game.secret,
-      account: auth.username,
-      server_id: server_id,
-      role_id: role_id,
-      title: 'Thư Tool',
-      content: 'Vật phẩm gửi từ tool',
-      items: items
+    // Check Server
+    const server = await DB.GameToolServerOpen.findOne({ game: game._id, server_id: server_id }).select('server_id') as IDBGameToolServerOpen
+    if(!server) throw 'Máy chủ không tồn tại'
+
+    // Check Item
+    const itemSelect = await DB.GameToolItem.findOne({ game: game._id, item_id: item.id }).select('item_id') as IDBGameToolItem
+    if(!itemSelect) throw 'Vật phẩm không hỗ trợ'
+
+    // Send API
+    let params : any = new URLSearchParams({
+      type: 'mail',
+      iditem: itemSelect.item_id,
+      num: amount,
+      usr: userGameTool.account,
+      server: server.server_id,
+      keygm: game.api.secret
     })
+    params = params.toString()
+    const send = await axios.get(`${game.api.mail}?${params}`)
+    const res = send.data
+    if(res.error) throw res.error
 
     return resp(event, { message: 'Gửi thư thành công' })
   } 

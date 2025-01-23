@@ -1,36 +1,51 @@
-import type { IAuth, IDBGameTool, IDBGameToolRecharge, IDBGameToolUser } from "~~/types"
+import type { IAuth, IDBGameTool, IDBGameToolRecharge, IDBGameToolServerOpen, IDBGameToolUser } from "~~/types"
+import axios from 'axios'
 
 export default defineEventHandler(async (event) => {
   try {
     const auth = await getAuth(event) as IAuth
     const body = await readBody(event)
 
-    const { game : code, recharge : recharge_id, server_id, role_id } = body
-    if(!code) throw 'Không tìm thấy mã trò chơi'
-    if(!recharge_id) throw 'Không tìm thấy mã gói nạp'
+    const { game : code, account, server_id, recharge } = body
     
-    const game = await DB.GameTool.findOne({ code: code, display: true }).select('ip api secret') as IDBGameTool
+    if(!code) throw 'Không tìm thấy mã trò chơi'
+    if(!account) throw 'Vui lòng chọn tài khoản game'
+    if(!server_id) throw 'Vui lòng chọn máy chủ'
+    if(!recharge) throw 'Vui lòng chọn vật phẩm để gửi'
+    if(!recharge.id) throw 'Vật phẩm gửi không hợp lệ'
+    
+    // Check Game
+    const game = await DB.GameTool.findOne({ code: code, display: true }).select('api') as IDBGameTool
     if(!game) throw 'Trò chơi không tồn tại'
-    if(!game.ip) throw 'Trò chơi đang bảo trì'
+    if(!game.api.recharge || !game.api.secret) throw 'Tính năng mua gói nạp đang bảo trì'
 
-    const userGame = await DB.GameToolUser.findOne({ game: game._id, user: auth._id }) as IDBGameToolUser
-    if(!userGame) throw 'Bạn chưa mua bất cứ tool nào'
-    if(!userGame.recharge) throw 'Vui lòng mua tool nạp trước'
+    // Check User Game
+    const userGameTool = await DB.GameToolUser.findOne({ game: game._id, user: auth._id, account: account }) as IDBGameToolUser
+    if(!userGameTool) throw 'Bạn chưa mua bất cứ tool nào cho tài khoản game này'
+    if(!userGameTool.recharge) throw 'Vui lòng mua tool nạp cho tài khoản game này trước'
 
-    const rechargeGameTool = await DB.GameToolRecharge.findOne({ _id: recharge_id, game: game._id }) as IDBGameToolRecharge
-    if(!rechargeGameTool) throw 'Gói nạp không tồn tại'
+    // Check Server
+    const server = await DB.GameToolServerOpen.findOne({ game: game._id, server_id: server_id }).select('server_id') as IDBGameToolServerOpen
+    if(!server) throw 'Máy chủ không tồn tại'
 
-    await gameSendRecharge(event, {
-      url: game.api.recharge,
-      secret: game.secret,
-      account: auth.username,
-      server_id: server_id,
-      role_id: role_id,
-      recharge_id: rechargeGameTool.recharge_id,
-      save_pay: rechargeGameTool.save_pay
+    // Check Recharge
+    const rechargeSelect = await DB.GameToolRecharge.findOne({ game: game._id, recharge_id: recharge.id }).select('recharge_id') as IDBGameToolRecharge
+    if(!rechargeSelect) throw 'Gói nạp không hỗ trợ'
+
+    // Send API
+    let params : any = new URLSearchParams({
+      type: 'charge',
+      idpay: rechargeSelect.recharge_id,
+      usr: userGameTool.account,
+      server: server.server_id,
+      keygm: game.api.secret
     })
+    params = params.toString()
+    const send = await axios.get(`${game.api.recharge}?${params}`)
+    const res = send.data
+    if(res.error) throw res.error
 
-    return resp(event, { message: 'Gửi thành công' })
+    return resp(event, { message: 'Nạp thành công' })
   } 
   catch (e:any) {
     return resp(event, { code: 400, message: e.toString() })
