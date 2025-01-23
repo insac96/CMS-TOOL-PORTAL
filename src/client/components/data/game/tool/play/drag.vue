@@ -38,10 +38,6 @@
         </template>
 
         <DataGameToolRecharge :game="game" @close="modal.recharge = false" />
-
-        <UiFlex justify="end" class="mt-2">
-          <UButton color="gray" @click="modal.recharge = false">Đóng</UButton>
-        </UiFlex>
       </UiContent>
     </UModal>
 
@@ -53,9 +49,6 @@
         </template>
 
         <DataGameToolMail :game="game" @close="modal.mail = false">
-          <template #close="{ loading }">
-            <UButton color="gray" :disabled="loading" @click="modal.mail = false">Đóng</UButton>
-          </template>
         </DataGameToolMail>
       </UiContent>
     </UModal>
