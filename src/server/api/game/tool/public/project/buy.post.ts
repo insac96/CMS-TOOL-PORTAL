@@ -1,4 +1,4 @@
-import type { IAuth, IDBUser, IDBGameToolUser, IDBGameTool } from "~~/types"
+import type { IAuth, IDBUser, IDBGameToolUser, IDBGameTool, IDBGameToolServerOpen } from "~~/types"
 
 export default defineEventHandler(async (event) => {
   try {
@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     const user = await DB.User.findOne({ _id: auth._id }).select('username currency') as IDBUser
     if(!user) throw 'Không tìm thấy thông tin tài khoản'
 
-    const { game : code, recharge, mail, account } = await readBody(event)
+    const { game : code, recharge, mail, account, server_id } = await readBody(event)
     if(!code) throw 'Không tìm thấy mã trò chơi'
     if(!account) throw 'Vui lòng nhập tên tài khoản game'
     if(!recharge && !mail) throw 'Vui lòng lựa chọn 1 loại tool để mua'
@@ -16,7 +16,10 @@ export default defineEventHandler(async (event) => {
     const game = await DB.GameTool.findOne({ code: code, display: true }).select('name price discount') as IDBGameTool
     if(!game) throw 'Trò chơi không tồn tại'
 
-    const userGame = await DB.GameToolUser.findOne({ game: game._id, user: user._id, account: account }) as IDBGameToolUser
+    const server = await DB.GameToolServerOpen.findOne({ game: game._id, server_id: server_id }) as IDBGameToolServerOpen
+    if(!server) throw 'Máy chủ không tồn tại'
+
+    const userGame = await DB.GameToolUser.findOne({ game: game._id, user: user._id, account: account, server_id: server_id }) as IDBGameToolUser
     let totalPrice = 0
     let discount = 0
     let result : any 
@@ -27,6 +30,7 @@ export default defineEventHandler(async (event) => {
         user: user._id, 
         game: game._id, 
         account: account,
+        server_id: server_id,
         recharge: false, 
         mail: false, 
         coin: 0 
@@ -83,7 +87,7 @@ export default defineEventHandler(async (event) => {
     // Log User
     logUser({
       user: auth._id,
-      action: `Mua <b>Tool</b> trò chơi <b>${game.name}</b> cho tài khoản game <b>${account}</b>`,
+      action: `Mua <b>Tool</b> trò chơi <b>${game.name}</b> cho tài khoản game <b>${account}</b> tại máy chủ <b>${server.server_name}</b>`,
       type: 'game.tool.buy',
       target: game._id.toString()
     })

@@ -19,11 +19,6 @@ export default defineEventHandler(async (event) => {
     if(!game) throw 'Trò chơi không tồn tại'
     if(!game.api.mail || !game.api.secret) throw 'Tính năng gửi thư đang bảo trì'
 
-    // Check User Game
-    const userGameTool = await DB.GameToolUser.findOne({ game: game._id, user: auth._id, account: account }) as IDBGameToolUser
-    if(!userGameTool) throw 'Bạn chưa mua bất cứ tool nào cho tài khoản game này'
-    if(!userGameTool.mail) throw 'Vui lòng mua tool gửi thư cho tài khoản game này trước'
-
     // Check Server
     const server = await DB.GameToolServerOpen.findOne({ game: game._id, server_id: server_id }).select('server_id') as IDBGameToolServerOpen
     if(!server) throw 'Máy chủ không tồn tại'
@@ -31,6 +26,11 @@ export default defineEventHandler(async (event) => {
     // Check Item
     const itemSelect = await DB.GameToolItem.findOne({ game: game._id, item_id: item.id }).select('item_id') as IDBGameToolItem
     if(!itemSelect) throw 'Vật phẩm không hỗ trợ'
+
+    // Check User Game
+    const userGameTool = await DB.GameToolUser.findOne({ game: game._id, user: auth._id, account: account, server_id: server.server_id }) as IDBGameToolUser
+    if(!userGameTool) throw 'Bạn chưa mua bất cứ tool nào cho tài khoản game này'
+    if(!userGameTool.mail) throw 'Vui lòng mua tool gửi thư cho tài khoản game này tại máy chủ này trước'
 
     // Send API
     let params : any = new URLSearchParams({

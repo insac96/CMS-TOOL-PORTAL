@@ -5,10 +5,11 @@
     </template>
 
     <UForm :state="stateBuy">
-      <UFormGroup label="Nhập tài khoản game" help="Vui lòng nhập đúng chính tả tên tài khoản trong game của bạn">
+      <UFormGroup help="Vui lòng nhập đúng chính tả tên tài khoản trong game của bạn">
         <UiFlex class="gap-1">
-          <UInput v-model="stateBuy.account" class="grow" size="sm"/>
-          <UButton @click="checkAccount">Kiểm tra</UButton>
+          <UInput v-model="stateBuy.account" class="grow" placeholder="Nhập tên tài khoản game" />
+          <SelectGameToolServer v-model="stateBuy.server_id" :game="game.code" class="grow" />
+          <UButton @click="checkAccount" size="lg">Kiểm tra</UButton>
         </UiFlex>
       </UFormGroup>
 
@@ -43,6 +44,8 @@
 </template>
 
 <script setup>
+import { SelectGameToolServer } from '#components'
+
 const {  toMoney } = useMoney()
 const props = defineProps(['game'])
 const emits = defineEmits(['done', 'close'])
@@ -58,9 +61,13 @@ const checkdone = ref({
 
 const stateBuy = ref({
   account: null,
+  server_id: null,
   recharge: false,
   mail: false
 })
+
+watch(() => stateBuy.value.server_id, (val) => (!!val && !!stateBuy.value.account) && checkAccount())
+watch(() => stateBuy.value.account, (val) => (!val && !!checkdone.value.status) && (checkdone.value.status = false))
 
 const price = computed(() => {
   let total = 0
@@ -88,6 +95,7 @@ const checkAccount = async () => {
 
     const send = {
       account: stateBuy.value.account,
+      server_id: stateBuy.value.server_id,
       game: props.game.code
     }
 

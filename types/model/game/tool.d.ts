@@ -76,6 +76,7 @@ export interface IDBGameToolUser {
   user: Types.ObjectId | IDBUser
   game: Types.ObjectId | IDBGameTool
   account: string
+  server_id: string
 
   recharge: boolean
   mail: boolean

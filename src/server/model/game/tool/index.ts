@@ -80,6 +80,7 @@ export const DBGameToolUser = (mongoose : Mongoose) => {
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     game: { type: mongoose.Schema.Types.ObjectId, ref: 'GameTool' },
     account: { type: String },
+    server_id: { type: String },
     recharge: { type: Boolean, index: true, default: false },
     mail: { type: Boolean, index: true, default: false },
     coin: { type: Number, index: true, default: 0 },
