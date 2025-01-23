@@ -113,7 +113,7 @@ const menus = (row) => [
     {
       label: 'Nhân vật',
       icon: 'i-bxs-user-account',
-      click: () => navigateTo(`/manage/@gm/tool/${row._id}/game/s`)
+      click: () => navigateTo(`/manage/@gm/tool/${row._id}/game/roles`)
     }
   ],[{
       label: 'Gói nạp',
