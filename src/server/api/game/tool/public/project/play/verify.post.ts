@@ -10,10 +10,10 @@ export default defineEventHandler(async (event) => {
     if(!code) throw 'Không tìm thấy mã trò chơi'
     if(!token) throw 'Không tìm thấy mã ủy quyền'
 
-    const game = await DB.GameTool.findOne({ code: code, display: true }).select('secret key') as IDBGameTool
+    const game = await DB.GameTool.findOne({ code: code, display: true }).select('key api') as IDBGameTool
     if(!game) throw 'Trò chơi không tồn tại'
 
-    const decoded = jwt.verify(token, game.secret) as any
+    const decoded = jwt.verify(token, game.api.secret) as any
     const url = decoded.url
     const key = game.key
 

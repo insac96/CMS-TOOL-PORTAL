@@ -10,9 +10,8 @@ export default defineEventHandler(async (event) => {
     if(!code) throw 'Không tìm thấy mã trò chơi'
     if(!type) throw 'Không tìm thấy hệ điều hành chơi'
 
-    const game = await DB.GameTool.findOne({ code: code, display: true }).select('_id ip api secret play statistic') as IDBGameTool
+    const game = await DB.GameTool.findOne({ code: code, display: true }).select('_id ip api play statistic') as IDBGameTool
     if(!game) throw 'Trò chơi không tồn tại'
-    if(!game.ip) throw 'Trò chơi đang bảo trì'
 
     const userGame = await DB.GameToolUser.findOne({ user: auth._id, game: game._id }) as IDBGameToolUser
     if(!userGame) {
@@ -23,12 +22,8 @@ export default defineEventHandler(async (event) => {
     // Get URL Play
     let result : any
     if(type == 'web'){
-      const url = await gameStart(event, {
-        url: game.api.start,
-        secret: game.secret,
-        account: auth.username
-      })
-      const token = jwt.sign({ url : url }, game.secret, { expiresIn: '360d' })
+      const url = game.play.web
+      const token = jwt.sign({ url : url }, game.api.secret, { expiresIn: '360d' })
       result = { token }
     }
     else {

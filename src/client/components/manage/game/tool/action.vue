@@ -111,7 +111,7 @@
         </UFormGroup>
 
         <UFormGroup label="API Nạp">
-          <UInput v-model="stateEditAPI.recharge" type="number" :disabled="!authStore.isAdmin" />
+          <UInput v-model="stateEditAPI.recharge" :disabled="!authStore.isAdmin" />
         </UFormGroup>
 
         <UFormGroup label="GM Key">
