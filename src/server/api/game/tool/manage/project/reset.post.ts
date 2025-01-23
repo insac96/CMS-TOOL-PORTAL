@@ -11,9 +11,8 @@ export default defineEventHandler(async (event) => {
     const game = await DB.GameTool.findOne({ _id: gameID }).select('name') as IDBGameTool
     if(!game) throw 'Trò chơi không tồn tại'
 
-    // await DB.GameToolServerOpen.deleteMany({ game: game._id })
+    await DB.GameToolServerOpen.deleteMany({ game: game._id })
     await DB.GameToolUser.deleteMany({ game: game._id })
-    await DB.GameToolPayment.deleteMany({ game: game._id })
     await DB.GameToolComment.deleteMany({ game: game._id })
     await DB.GameToolLogAdmin.deleteMany({ game: game._id })
     await DB.GameTool.updateOne({ _id: game._id },{
