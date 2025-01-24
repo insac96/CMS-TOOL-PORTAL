@@ -28,6 +28,10 @@
           <UiIcon name="i-bxs-x-circle" color="gray" size="5" v-else></UiIcon>
         </template>
 
+        <template #server-data="{ row }">
+          {{ row.server.server_name }}
+        </template>
+
         <template #createdAt-data="{ row }">
           {{ useDayJs().displayFull(row.createdAt) }}
         </template>
@@ -55,7 +59,7 @@ const columns = [
     key: 'account',
     label: 'Tài khoản Game',
   },{
-    key: 'server_id',
+    key: 'server',
     label: 'Máy chủ',
   },{
     key: 'recharge',

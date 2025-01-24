@@ -1,4 +1,4 @@
-import type { IAuth, IDBGameToolUser, IDBGameTool } from "~~/types"
+import type { IAuth, IDBGameToolUser, IDBGameTool, IDBGameToolServerOpen } from "~~/types"
 
 export default defineEventHandler(async (event) => {
   try {
@@ -12,12 +12,12 @@ export default defineEventHandler(async (event) => {
     const game = await DB.GameTool.findOne({ code: code, display: true }).select('_id') as IDBGameTool
     if(!game) throw 'Trò chơi không tồn tại'
 
-    const userGame = await DB.GameToolUser.findOne({ game: game._id, user: auth._id, account: account, server_id: server_id }) as IDBGameToolUser
-    let result = {
-      recharge: false,
-      mail: false
-    }
+    const server = await DB.GameToolServerOpen.findOne({ game: game._id, server_id: server_id }) as IDBGameToolServerOpen
+    if(!server) throw 'Máy chủ không tồn tại'
 
+    const userGame = await DB.GameToolUser.findOne({ game: game._id, user: auth._id, account: account, server: server._id }) as IDBGameToolUser
+    
+    let result = { recharge: false, mail: false }
     if(!!userGame){
       result.mail = userGame.mail
       result.recharge = userGame.recharge

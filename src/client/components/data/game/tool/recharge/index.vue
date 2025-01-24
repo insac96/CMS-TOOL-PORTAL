@@ -1,11 +1,7 @@
 <template>
   <UForm :state="state" :validate="validate" @submit="send">
-    <UFormGroup label="Tài khoản Game" name="account">
-      <SelectGameToolAccount v-model="state.account" :game="game.code" />
-    </UFormGroup>
-
-    <UFormGroup label="Máy chủ" name="server_id">
-      <SelectGameToolServer v-model="state.server_id" :game="game.code" />
+    <UFormGroup label="Tài khoản Game" name="info">
+      <SelectGameToolAccount v-model="state.info" :game="game.code" />
     </UFormGroup>
 
     <UFormGroup label="Gói nạp" name="recharge">
@@ -25,16 +21,14 @@ const emits = defineEmits(['close'])
 const loading = ref(false)
 
 const state = ref({
-  server_id: props.server,
-  account: props.role,
+  info: null,
   recharge: null,
   game: props.game?.code
 })
 
 const validate = (state) => {
   const errors = []
-  if (!state.server_id) errors.push({ path: 'server_id', message: 'Vui lòng chọn máy chủ' })
-  if (!state.account) errors.push({ path: 'account', message: 'Vui lòng chọn tài khoản game' })
+  if (!state.info) errors.push({ path: 'info', message: 'Vui lòng chọn tài khoản game' })
   if (!state.recharge) errors.push({ path: 'recharge', message: 'Vui lòng chọn gói nạp' })
   return errors
 }

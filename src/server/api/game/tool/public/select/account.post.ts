@@ -18,7 +18,8 @@ export default defineEventHandler(async (event) => {
 
     const list = await DB.GameToolUser
     .find(match)
-    .select('account')
+    .select('account server')
+    .populate({ path: 'server', select: 'server_id server_name' })
     .limit(20)
 
     return resp(event, { result: list })

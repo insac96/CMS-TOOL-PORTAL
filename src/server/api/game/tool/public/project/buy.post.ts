@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
         user: user._id, 
         game: game._id, 
         account: account,
-        server_id: server_id,
+        server: server._id,
         recharge: false, 
         mail: false, 
         coin: 0 

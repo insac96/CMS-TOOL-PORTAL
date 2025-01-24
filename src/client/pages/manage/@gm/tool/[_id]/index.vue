@@ -23,6 +23,10 @@
           </UBadge>
         </template>
 
+        <template #server-data="{ row }">
+          {{ row.server.server_name }}
+        </template>
+
         <template #recharge-data="{ row }">
           <UiIcon name="i-bxs-check-circle" color="green" size="5" v-if="!!row.recharge"></UiIcon>
           <UiIcon name="i-bxs-x-circle" color="gray" size="5" v-else></UiIcon>
@@ -66,6 +70,9 @@ const columns = [
   },{
     key: 'account',
     label: 'Tài khoản Game',
+  },{
+    key: 'server',
+    label: 'Máy chủ',
   },{
     key: 'recharge',
     label: 'Tool nạp',

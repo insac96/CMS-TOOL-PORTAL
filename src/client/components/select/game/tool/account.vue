@@ -7,7 +7,11 @@
     debounce
   >
     <template #label>
-      {{ !!select ? select : 'Tìm kiếm tài khoản' }}
+      {{ !!select ? `${select.account} - ${select.server_name}` : 'Chọn tài khoản' }}
+    </template>
+
+    <template #option="{ option: option }">
+      {{ `${option.account} - ${option.server_name}` }}
     </template>
   </USelectMenu>
 </template>
@@ -34,6 +38,10 @@ watch(itemSelect, val => {
 const searchItem = async (key) => {
   const list = await useAPI('game/tool/public/select/account', { key: key, game: props.game })
 
-  return list.map(i => i.account).filter(Boolean)
+  return list.map(i => ({
+    account: i.account,
+    server_id: i.server.server_id,
+    server_name: i.server.server_name
+  })).filter(Boolean)
 }
 </script>

@@ -6,13 +6,15 @@ export default defineEventHandler(async (event) => {
     const auth = await getAuth(event) as IAuth
     const body = await readBody(event)
 
-    const { game : code, account, server_id, recharge } = body
+    const { game : code, info, recharge } = body
     
     if(!code) throw 'Không tìm thấy mã trò chơi'
-    if(!account) throw 'Vui lòng chọn tài khoản game'
-    if(!server_id) throw 'Vui lòng chọn máy chủ'
+    if(!info) throw 'Vui lòng chọn tài khoản game'
+    if(!info.account || !info.server_id) throw 'Tài khoản game không hợp lệ'
     if(!recharge) throw 'Vui lòng chọn vật phẩm để gửi'
     if(!recharge.id) throw 'Vật phẩm gửi không hợp lệ'
+
+    const { account, server_id } = info
     
     // Check Game
     const game = await DB.GameTool.findOne({ code: code, display: true }).select('api') as IDBGameTool
@@ -28,7 +30,7 @@ export default defineEventHandler(async (event) => {
     if(!rechargeSelect) throw 'Gói nạp không hỗ trợ'
 
     // Check User Game
-    const userGameTool = await DB.GameToolUser.findOne({ game: game._id, user: auth._id, account: account, server_id: server.server_id }) as IDBGameToolUser
+    const userGameTool = await DB.GameToolUser.findOne({ game: game._id, user: auth._id, account: account, server: server._id }) as IDBGameToolUser
     if(!userGameTool) throw 'Bạn chưa mua bất cứ tool nào cho tài khoản game này'
     if(!userGameTool.recharge) throw 'Vui lòng mua tool nạp cho tài khoản game này tại máy chủ này trước'
 

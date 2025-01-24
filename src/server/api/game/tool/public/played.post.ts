@@ -25,6 +25,7 @@ export default defineEventHandler(async (event) => {
     const list = await DB.GameToolUser
     .find(match)
     .populate({ path: 'game', select: 'name code key' })
+    .populate({ path: 'server', select: 'server_name' })
     .sort(sorting)
     .limit(size)
     .skip((current - 1) * size)
